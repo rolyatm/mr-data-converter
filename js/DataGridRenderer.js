@@ -23,6 +23,15 @@ var DataGridRenderer = {
     //begin render loop
     for (var i=0; i < numRows; i++) {
       var row = dataGrid[i];
+      var districtMapping = {};
+      //-----------
+      //var myMap = {};
+      //myMap["a"] = "teste";
+      //myMap["b"] = "bravo";
+      //for (key in myMap) {
+      //  alert(myMap[key]);
+      //}
+      
       var attackInfo = '"attacks": [{';
       var districtInfo = "{";
       for (var j=0; j < numColumns; j++) {
@@ -31,8 +40,26 @@ var DataGridRenderer = {
         } else {
           var rowOutput = '"' + ( row[j] || "" ) + '"';
         };
-        
+       //Structures json into generally correct structure. Need to modify so that each district occurs only once and all attacks occur as child elements
+        // 1. Create a object to hold the district : attacks
+        // 2. parse each row of data into an object that holds column : value
+        // 3. parse row object and append to appropriate district object key 
         if (headerNames[j] == "district") {
+          if districtMapping[rowOutput] {
+            if (headerNames[j] == "date of attack") {
+              attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
+            };
+          if (headerNames[j] == "type of attack") {
+            attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
+          }; 
+          if (headerNames[j] == "summary of event") {
+            attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
+          };
+          if (headerNames[j] == "source") {
+            attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + "}]}");
+          };
+            };
+
           districtInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput);
         }; 
         if (headerNames[j] == "date of attack") {
@@ -43,7 +70,7 @@ var DataGridRenderer = {
         }; 
         if (headerNames[j] == "summary of event") {
           attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
-        }; 
+        };
         if (headerNames[j] == "source") {
           attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + "}]}");
         };
@@ -54,7 +81,7 @@ var DataGridRenderer = {
       //outputText += "}";
       if (i < (numRows-1)) {outputText += ","+newLine};
     };
-    outputText += "}";
+    outputText += "]}";
     
     return outputText;
     //return outputText;
