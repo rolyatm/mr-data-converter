@@ -9,6 +9,58 @@
 var DataGridRenderer = {
   
   //---------------------------------------
+  // Attack JSON
+  //---------------------------------------
+
+  attacks: function (dataGrid, headerNames, headerTypes, indent, newLine) {
+    //inits...
+    var commentLine = "//";
+    var commentLineEnd = "";
+    var outputText = '{"districts": [';
+    var numRows = dataGrid.length;
+    var numColumns = headerNames.length;
+    
+    //begin render loop
+    for (var i=0; i < numRows; i++) {
+      var row = dataGrid[i];
+      var attackInfo = '"attacks": [{';
+      var districtInfo = "{";
+      for (var j=0; j < numColumns; j++) {
+        if ((headerTypes[j] == "int")||(headerTypes[j] == "float")) {
+          var rowOutput = row[j] || "null";
+        } else {
+          var rowOutput = '"' + ( row[j] || "" ) + '"';
+        };
+        
+        if (headerNames[j] == "district") {
+          districtInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput);
+        }; 
+        if (headerNames[j] == "date of attack") {
+          attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
+        };
+        if (headerNames[j] == "type of attack") {
+          attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
+        }; 
+        if (headerNames[j] == "summary of event") {
+          attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
+        }; 
+        if (headerNames[j] == "source") {
+          attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + "}]}");
+        };
+        
+        //if (j < (numColumns-1)) {outputText+=","};
+      };
+      outputText += districtInfo + "," + attackInfo;
+      //outputText += "}";
+      if (i < (numRows-1)) {outputText += ","+newLine};
+    };
+    outputText += "}";
+    
+    return outputText;
+    //return outputText;
+  },
+
+  //---------------------------------------
   // Actionscript
   //---------------------------------------
   
