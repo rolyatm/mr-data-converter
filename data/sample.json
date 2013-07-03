@@ -1,0 +1,10 @@
+{"districts": [
+	{ "name":"District 7", "id":3, "attacks": [
+		{"DATE OF ATTACK":"4-Mar-12", "TYPE OF ATTACK":"BOOM", "SUMMARY OF EVENT":"Shit happened", "SOURCE":"URL"},
+		{"DATE OF ATTACK":"4-Mar-12", "TYPE OF ATTACK":"BOOM", "SUMMARY OF EVENT":"Shit happened", "SOURCE":"URL"}]
+	},
+	{ "name":"District 9", "id":9, "attacks": [
+		{"DATE OF ATTACK":"4-Mar-12", "TYPE OF ATTACK":"BOOM", "SUMMARY OF EVENT":"Shit happened", "SOURCE":"URL"},
+		{"DATE OF ATTACK":"4-Mar-12", "TYPE OF ATTACK":"BOOM", "SUMMARY OF EVENT":"Shit happened", "SOURCE":"URL"}]
+	}]
+}
