@@ -16,75 +16,70 @@ var DataGridRenderer = {
     //inits...
     var commentLine = "//";
     var commentLineEnd = "";
-    var outputText = '{"districts": [';
+    var outputText = '{"districts": [' + newLine;
     var numRows = dataGrid.length;
     var numColumns = headerNames.length;
+    var districtLookupIndex;
+    var districtMapping = {};
+    var numDistricts=0;
     
-    //begin render loop
+    //figures out where district name lives in the array
+    for (var i=0; i < numColumns; i++) {
+      if (headerNames[i] == "district") {districtLookupIndex = i;};
+    };
+
+    //begings rendering
     for (var i=0; i < numRows; i++) {
       var row = dataGrid[i];
-      var districtMapping = {};
-      //-----------
-      //var myMap = {};
-      //myMap["a"] = "teste";
-      //myMap["b"] = "bravo";
-      //for (key in myMap) {
-      //  alert(myMap[key]);
-      //}
+      var attackInfoParse = "{";
+      var currentDistrict;
+
+      //1. checks dictrict. if the district is seen for the first time, set up a new district in object
+      if (!districtMapping[row[districtLookupIndex]]) {
+        districtMapping[row[districtLookupIndex]] = '{"district":"' + row[districtLookupIndex] +'", "attacks": [' + newLine;
+        numDistricts++;
+      } else { //if district already exists, add a comma and line feed to prepare for new attack info
+        districtMapping[row[districtLookupIndex]] += "," + newLine;
+      };
       
-      var attackInfo = '"attacks": [{';
-      var districtInfo = "{";
+      //2. iterates through all columns and structures text
       for (var j=0; j < numColumns; j++) {
         if ((headerTypes[j] == "int")||(headerTypes[j] == "float")) {
           var rowOutput = row[j] || "null";
         } else {
           var rowOutput = '"' + ( row[j] || "" ) + '"';
         };
-       //Structures json into generally correct structure. Need to modify so that each district occurs only once and all attacks occur as child elements
-        // 1. Create a object to hold the district : attacks
-        // 2. parse each row of data into an object that holds column : value
-        // 3. parse row object and append to appropriate district object key 
-        if (headerNames[j] == "district") {
-          if districtMapping[rowOutput] {
-            if (headerNames[j] == "date of attack") {
-              attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
-            };
-          if (headerNames[j] == "type of attack") {
-            attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
-          }; 
-          if (headerNames[j] == "summary of event") {
-            attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
-          };
-          if (headerNames[j] == "source") {
-            attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + "}]}");
-          };
-            };
-
-          districtInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput);
-        }; 
-        if (headerNames[j] == "date of attack") {
-          attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
+        if (j == districtLookupIndex) { 
+          continue;
+        } else {
+          attackInfoParse += ('"'+headerNames[j] +'"' + ":" + rowOutput);
         };
-        if (headerNames[j] == "type of attack") {
-          attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
-        }; 
-        if (headerNames[j] == "summary of event") {
-          attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + ",");
-        };
-        if (headerNames[j] == "source") {
-          attackInfo += ('"'+headerNames[j] +'"' + ":" + rowOutput + "}]}");
-        };
-        
-        //if (j < (numColumns-1)) {outputText+=","};
+        if (j < (numColumns-1)) {attackInfoParse+=","};
       };
-      outputText += districtInfo + "," + attackInfo;
-      //outputText += "}";
-      if (i < (numRows-1)) {outputText += ","+newLine};
+      attackInfoParse+="}";
+    //3. Adds attack line to appropriate district  
+    districtMapping[row[districtLookupIndex]] += attackInfoParse;
+            //outputText += "}";
     };
+
+    //4. enumerating through js object that i'm using as a dictionary
+    //object has no concept of length so used var numDistricts to track the number of districts
+    //added and var count to track progress through enumeration. 
+    //I have to do this because I have to append a comma to every element except the last
+    var count=0;
+    for (key in districtMapping) {
+      count++;      
+      outputText += districtMapping[key]; 
+      if (count < numDistricts) {
+        outputText += (newLine + "]}," + newLine);
+      } else {
+        outputText += (newLine + "]}" + newLine)
+      };
+    };
+
     outputText += "]}";
-    
     return outputText;
-    //return outputText;
+
   },
 
   //---------------------------------------
